@@ -1,89 +1,170 @@
 # YouTube Channel Globe Visualizer
 
-A modular 3D globe visualization for YouTube channel thumbnails. This project uses Three.js to create an interactive globe that can display YouTube thumbnails on its surface.
+A simple 3D globe visualization that displays images (like YouTube thumbnails) on an interactive globe using Three.js.
 
-## Project Structure
+## Quick Start
 
-```
-├── dist/               # Compiled files
-├── src/                # Source files
-│   ├── js/             # JavaScript modules
-│   │   ├── components/ # Core components
-│   │   │   ├── GlobeVisualizer.js   # Core globe functionality
-│   │   │   ├── AnimationManager.js  # Animation system
-│   │   │   └── ImageProjector.js    # Image projection system
-│   │   ├── utils/     # Utility functions
-│   │   ├── config.js  # Configuration settings
-│   │   └── index.js   # Main entry point
-│   └── index.html     # HTML template
-├── .babelrc           # Babel configuration
-├── package.json       # Project dependencies
-├── webpack.config.js  # Webpack configuration
-└── README.md          # Project documentation
-```
+### 1. Include the Script
 
-## Installation
-
-```bash
-# Navigate to the project directory
-cd ModularGlobe
-
-# Install dependencies
-npm install
-```
-
-## Development
-
-```bash
-# Start development server with hot reloading
-npm run serve
-
-# Build for development with watch mode
-npm run dev
-```
-
-## Production Build
-
-```bash
-# Create production build
-npm run build
-```
-
-The compiled files will be in the `dist` directory.
-
-## Configuration
-
-You can customize the globe visualization by modifying the `config.js` file. This includes:
-
-- Globe appearance (radius, color, dot density)
-- Lighting settings
-- Camera position
-- Image projection options
-- Animation sequences
-
-## Usage
-
-To use the globe visualizer in your own project:
-
-1. Build the project using `npm run build`
-2. Copy the `dist/bundle.js` file to your project
-3. Include it in your HTML:
+Add the compiled script to your HTML:
 
 ```html
-<script src="path/to/bundle.js"></script>
+<script src="./dist/globe-visualizer.js"></script>
 ```
 
-## Customization
+### 2. Create a Container
 
-To customize the images displayed on the globe, modify the `images` array in the `config.js` file:
+Add a container element where the globe will be rendered:
+
+```html
+<div id="globe-container"></div>
+```
+
+### 3. Initialize the Globe
+
+Call the `initiateGlobe` function with your parameters:
 
 ```javascript
-images: [
-    'path/to/image1.jpg',
-    'path/to/image2.jpg',
-    // Add more images as needed
-]
+const globeAPI = initiateGlobe(
+    channelName,             // String: Display name for the channel
+    imageUrls,               // Array: URLs of images to display
+    configOverrides,         // Object: Custom configuration (optional)
+    callbackFunction,        // Function: Called when animation completes (optional)
+    targetElement            // HTMLElement: Container to render the globe
+);
 ```
+
+## Function Parameters
+
+### `channelName` (String, required)
+The name or title to display for the channel. This appears in the globe visualization.
+- **Example**: `'@MarkRober'`, `'My YouTube Channel'`, `'Travel Vlogs'`
+
+### `imageUrls` (Array, required)
+An array of image URLs that will be displayed on the globe surface. Images should be publicly accessible.
+- **Format**: Array of strings
+- **Example**: `['https://example.com/thumb1.jpg', 'https://example.com/thumb2.jpg']`
+- **Requirements**: 
+  - URLs must be accessible (consider CORS policies)
+  - Recommended: 400x300 pixel images
+  - Supported formats: JPG, PNG, WebP
+
+### `configOverrides` (Object, optional)
+Custom configuration to override default globe settings. Pass an empty object `{}` if no customization needed.
+- **Example**: 
+```javascript
+{
+    // Custom settings go here
+    // Refer to source config.js for available options
+}
+```
+
+### `callbackFunction` (Function, optional)
+A function that gets called when the globe animation sequence completes. Useful for triggering other actions.
+- **Example**: 
+```javascript
+function() {
+    console.log('Globe animation finished!');
+    // Your custom code here
+}
+```
+- **Alternative**: `null` if no callback needed
+
+### `targetElement` (HTMLElement, required)
+The DOM element where the globe will be rendered. Must be a valid HTML element.
+- **Example**: `document.getElementById('globe-container')`
+- **Requirements**: 
+  - Element should have defined dimensions
+  - Recommended: Full viewport or fixed size container
+
+## Complete Example
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Globe Visualizer</title>
+    <style>
+        #globe-container {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background-color: black;
+        }
+    </style>
+</head>
+<body>
+    <div id="globe-container"></div>
+    
+    <script src="./dist/globe-visualizer.js"></script>
+    <script>
+        // Your image URLs
+        const images = [
+            'https://example.com/image1.jpg',
+            'https://example.com/image2.jpg',
+            // Add more images...
+        ];
+        
+        // Initialize the globe
+        const globe = initiateGlobe(
+            '@YourChannel',
+            images,
+            {}, // config overrides (optional)
+            function() {
+                console.log('Globe animation completed!');
+            },
+            document.getElementById('globe-container')
+        );
+    </script>
+</body>
+</html>
+```
+
+## Configuration Options
+
+You can customize the globe by passing configuration overrides:
+
+```javascript
+const configOverrides = {
+    // Add your custom configuration here
+    // (refer to the source config.js for available options)
+};
+```
+
+## Image Requirements
+
+- Images should be accessible via CORS (use `crossOrigin: 'anonymous'` if needed)
+- Recommended size: 400x300 pixels
+- Supported formats: JPG, PNG, WebP
+- For best performance, preload images before initializing the globe
+
+## Development Setup
+
+If you want to modify the globe visualizer:
+
+```bash
+# Install dependencies
+npm install
+
+# Build the project
+npm run build
+
+# The compiled file will be in dist/globe-visualizer.js
+```
+
+## How It Works
+
+1. **Initialization**: The globe creates a 3D sphere using Three.js
+2. **Image Loading**: Images are loaded and projected onto the globe surface
+3. **Animation**: The globe rotates and displays images in sequence
+4. **Interaction**: Users can interact with the globe (rotation, zoom)
+
+## Browser Support
+
+- Modern browsers with WebGL support
+- Chrome, Firefox, Safari, Edge (latest versions)
 
 ## License
 
