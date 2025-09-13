@@ -42,19 +42,20 @@ export function injectStyles() {
         }
         
         .globe-visualizer-container .globe-welcome-text {
-            font-size: clamp(4rem, 12vw, 12rem);
+            font-size: clamp(2.5rem, 8vw, 12rem);
             font-weight: 900;
             color: black;
             text-align: center;
             opacity: 0;
             transform: scale(0.8);
             position: absolute;
-            padding-left: 100px;
-            padding-right: 100px;
-            max-width: 85%;
+            padding-left: clamp(20px, 5vw, 100px);
+            padding-right: clamp(20px, 5vw, 100px);
+            max-width: 90%;
             margin: 0 auto;
             word-wrap: break-word;
             white-space: normal;
+            line-height: 1.1;
         }
         
         .globe-visualizer-container .globe-welcome-text::after {
@@ -79,7 +80,7 @@ export function injectStyles() {
         }
         
         .globe-visualizer-container .globe-welcome-text.lets-go {
-            font-size: clamp(3rem, 9vw, 9rem);
+            font-size: clamp(2rem, 6vw, 9rem);
             animation: globeTextAppearStays 1s ease-out 9.5s forwards;
         }
         

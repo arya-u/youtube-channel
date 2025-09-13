@@ -9,6 +9,7 @@
             margin: 0;
             padding: 20px;
             font-family: Arial, sans-serif;
+            font-size: 16px;
         }
         .container {
             max-width: 1200px;
@@ -28,6 +29,7 @@
             margin: 5px;
             border-radius: 4px;
             cursor: pointer;
+            font-size: 14px;
         }
         button:hover {
             background: #45a049;
@@ -41,6 +43,7 @@
             padding: 10px;
             background: rgba(0, 0, 0, 0.3);
             border-radius: 4px;
+            font-size: 14px;
         }
         #globe-container {
             position: fixed;
@@ -50,6 +53,72 @@
             left: 0;
             overflow: hidden;
             background-color: black;
+        }
+        
+        /* Responsive Design - Mobile First */
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+                font-size: 14px;
+            }
+            .controls {
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+            button {
+                padding: 8px 16px;
+                font-size: 12px;
+                margin: 3px;
+            }
+            .status {
+                padding: 8px;
+                font-size: 12px;
+            }
+        }
+        
+        /* Tablet */
+        @media (min-width: 481px) and (max-width: 768px) {
+            body {
+                padding: 15px;
+                font-size: 15px;
+            }
+            .controls {
+                padding: 18px;
+            }
+            button {
+                padding: 9px 18px;
+                font-size: 13px;
+            }
+            .status {
+                font-size: 13px;
+            }
+        }
+        
+        /* Desktop */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            body {
+                font-size: 16px;
+            }
+            button {
+                font-size: 14px;
+            }
+            .status {
+                font-size: 14px;
+            }
+        }
+        
+        /* Large Desktop */
+        @media (min-width: 1025px) {
+            body {
+                font-size: 16px;
+            }
+            button {
+                font-size: 14px;
+                padding: 12px 24px;
+            }
+            .status {
+                font-size: 14px;
+            }
         }
     </style>
 </head>
