@@ -55,6 +55,28 @@
             background-color: black;
         }
         
+        .instructions {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 1000;
+            max-width: 250px;
+        }
+        
+        .instructions h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+        }
+        
+        .instructions p {
+            margin: 5px 0;
+        }
+        
         /* Responsive Design - Mobile First */
         @media (max-width: 480px) {
             body {
@@ -125,6 +147,11 @@
 <body>
     <div class="container">
         <div id="globe-container"></div>
+        <div class="instructions">
+            <h3>Controls</h3>
+            <p><strong>Space:</strong> Destroy globe and test cleanup</p>
+            <p><strong>F5:</strong> Reload page</p>
+        </div>
     </div>
 
     <!-- Include the Globe Visualizer bundle -->
@@ -245,6 +272,22 @@
             processedImages = await prepareImages();
             initializeGlobe(processedImages);
         })();
+        
+        // Add space key listener to test destroy function
+        document.addEventListener('keydown', function(event) {
+            if (event.code === 'Space') {
+                event.preventDefault();
+                console.log('Space key pressed - calling destroy function...');
+                updateStatus('Destroying globe...');
+                
+                if (globeAPI && globeAPI.destroy) {
+                    globeAPI.destroy();
+                    updateStatus('Globe destroyed! Press F5 to reload.');
+                } else {
+                    updateStatus('Globe API not available or destroy function not found.');
+                }
+            }
+        });
     </script>
 </body>
 </html>

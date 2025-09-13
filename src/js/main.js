@@ -169,18 +169,113 @@ function initiateGlobe(name = 'User', images = [], overrides = {}, callback = nu
          * Destroy the globe and clean up resources
          */
         destroy: () => {
-            // Remove event listeners
-            window.removeEventListener('resize', resizeHandler);
+            console.log('Destroying globe visualization...');
             
-            // Remove container from DOM
-            if (container && container.parentNode) {
-                container.parentNode.removeChild(container);
+            try {
+                // Stop all animations first
+                if (responsiveVisualizer && responsiveVisualizer.animationManager) {
+                    responsiveVisualizer.animationManager.stop();
+                }
+            } catch (error) {
+                console.warn('Error stopping animations:', error);
             }
             
-            // Clean up Three.js resources
-            if (globe) {
-                globe.dispose && globe.dispose();
+            try {
+                // Clean up responsive visualizer
+                if (responsiveVisualizer) {
+                    responsiveVisualizer.destroy();
+                }
+            } catch (error) {
+                console.warn('Error destroying responsive visualizer:', error);
             }
+            
+            try {
+                // Clean up image projector
+                if (projector) {
+                    // Stop any ongoing image loading or processing
+                    if (projector.dispose) {
+                        projector.dispose();
+                    }
+                }
+            } catch (error) {
+                console.warn('Error disposing image projector:', error);
+            }
+            
+            try {
+                // Clean up Three.js resources
+                if (globe) {
+                    // Dispose of globe visualizer resources
+                    if (globe.dispose) {
+                        globe.dispose();
+                    }
+                    
+                    // Clean up scene objects
+                    if (globe.getScene) {
+                        const scene = globe.getScene();
+                        while (scene.children.length > 0) {
+                            const child = scene.children[0];
+                            scene.remove(child);
+                            
+                            // Dispose of geometries and materials
+                            if (child.geometry) {
+                                child.geometry.dispose();
+                            }
+                            if (child.material) {
+                                if (Array.isArray(child.material)) {
+                                    child.material.forEach(material => material.dispose());
+                                } else {
+                                    child.material.dispose();
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Dispose of renderer
+                    if (globe.getRenderer) {
+                        const renderer = globe.getRenderer();
+                        if (renderer) {
+                            renderer.dispose();
+                            renderer.forceContextLoss();
+                            renderer.domElement = null;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.warn('Error disposing Three.js resources:', error);
+            }
+            
+            try {
+                // Remove event listeners
+                window.removeEventListener('resize', resizeHandler);
+            } catch (error) {
+                console.warn('Error removing event listeners:', error);
+            }
+            
+            try {
+                // Remove container from DOM
+                if (container && container.parentNode) {
+                    container.parentNode.removeChild(container);
+                }
+            } catch (error) {
+                console.warn('Error removing container from DOM:', error);
+            }
+            
+            try {
+                // Clear any remaining timeouts or intervals
+                if (typeof window !== 'undefined') {
+                    // Clear any animation frames
+                    if (window.requestAnimationFrame) {
+                        let id = window.requestAnimationFrame(() => {});
+                        while (id--) {
+                            window.cancelAnimationFrame(id);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.warn('Error clearing timeouts/intervals:', error);
+            }
+            
+            console.log('Globe visualization destroyed successfully.');
         },
         
         /**

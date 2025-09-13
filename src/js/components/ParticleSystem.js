@@ -251,11 +251,13 @@ export class ParticleSystem {
         }
         
         // Set render order for individual particles
-        this.particles.forEach(particle => {
-            if (particle.mesh) {
-                particle.mesh.renderOrder = renderOrder;
-            }
-        });
+        if (this.particles && Array.isArray(this.particles)) {
+            this.particles.forEach(particle => {
+                if (particle.mesh) {
+                    particle.mesh.renderOrder = renderOrder;
+                }
+            });
+        }
         
         // Trail render order setting removed - trails are disabled
     }
@@ -264,12 +266,14 @@ export class ParticleSystem {
      * Dispose of the particle system
      */
     dispose() {
-        this.particles.forEach(particle => {
-            if (particle.material.map) {
-                particle.material.map.dispose();
-            }
-            particle.material.dispose();
-        });
+        if (this.particles && Array.isArray(this.particles)) {
+            this.particles.forEach(particle => {
+                if (particle.material.map) {
+                    particle.material.map.dispose();
+                }
+                particle.material.dispose();
+            });
+        }
         
         // Trail disposal removed - trails are disabled
         

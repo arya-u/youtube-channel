@@ -510,7 +510,8 @@ export class ImageProjector {
      */
     reprojectAllImages() {
         // Update existing meshes using geometry morphing instead of recreation
-        this.projectionData.forEach(data => {
+        if (this.projectionData && Array.isArray(this.projectionData)) {
+            this.projectionData.forEach(data => {
             if (data.mesh && data.mesh.geometry) {
                 this.updateGeometryForSize(
                     data.mesh,
@@ -522,5 +523,46 @@ export class ImageProjector {
                 );
             }
         });
+        }
+    }
+
+    /**
+     * Dispose of all projected images and clean up resources
+     */
+    dispose() {
+        console.log('ImageProjector: Disposing of all projected images...');
+        
+        // Clean up all projection data (with safety check)
+        if (this.projectionData && Array.isArray(this.projectionData)) {
+            this.projectionData.forEach(data => {
+                if (data.mesh) {
+                    // Remove mesh from sphere
+                    if (this.sphere && data.mesh.parent) {
+                        data.mesh.parent.remove(data.mesh);
+                    }
+                    
+                    // Dispose of geometry and material
+                    if (data.mesh.geometry) {
+                        data.mesh.geometry.dispose();
+                    }
+                    if (data.mesh.material) {
+                        if (data.mesh.material.map) {
+                            data.mesh.material.map.dispose();
+                        }
+                        data.mesh.material.dispose();
+                    }
+                }
+            });
+        }
+        
+        // Clear projection data array
+        this.projectionData = [];
+        
+        // Clear references
+        this.sphere = null;
+        this.camera = null;
+        this.gradientManager = null;
+        
+        console.log('ImageProjector: Disposal complete.');
     }
 }

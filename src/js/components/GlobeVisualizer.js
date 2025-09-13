@@ -632,30 +632,114 @@ export class GlobeVisualizer {
      * Dispose of the visualizer and clean up resources
      */
     dispose() {
+        console.log('Disposing GlobeVisualizer resources...');
+        
         // Clear the fade plane timer
         if (this.clearTimer) {
             clearInterval(this.clearTimer);
             this.clearTimer = null;
         }
         
+        // Stop any ongoing animations
+        if (this.animationId) {
+            cancelAnimationFrame(this.animationId);
+            this.animationId = null;
+        }
+        
         // Dispose of particle system
         if (this.particleSystem) {
             this.particleSystem.dispose();
+            this.particleSystem = null;
         }
         
         // Dispose of gradient manager
         if (this.gradientManager) {
             this.gradientManager.dispose();
+            this.gradientManager = null;
         }
         
         // Dispose of depth effect shader
         if (this.depthEffectShader) {
             this.depthEffectShader.dispose();
+            this.depthEffectShader = null;
+        }
+        
+        // Dispose of sphere and its materials
+        if (this.sphere) {
+            if (this.sphere.geometry) {
+                this.sphere.geometry.dispose();
+            }
+            if (this.sphere.material) {
+                if (Array.isArray(this.sphere.material) && this.sphere.material.length > 0) {
+                    this.sphere.material.forEach(material => {
+                        if (material.map) material.map.dispose();
+                        if (material.normalMap) material.normalMap.dispose();
+                        if (material.roughnessMap) material.roughnessMap.dispose();
+                        material.dispose();
+                    });
+                } else {
+                    if (this.sphere.material.map) this.sphere.material.map.dispose();
+                    if (this.sphere.material.normalMap) this.sphere.material.normalMap.dispose();
+                    if (this.sphere.material.roughnessMap) this.sphere.material.roughnessMap.dispose();
+                    this.sphere.material.dispose();
+                }
+            }
+            if (this.scene) {
+                this.scene.remove(this.sphere);
+            }
+            this.sphere = null;
+        }
+        
+        // Dispose of fade plane
+        if (this.fadePlane) {
+            if (this.fadePlane.geometry) {
+                this.fadePlane.geometry.dispose();
+            }
+            if (this.fadePlane.material) {
+                if (this.fadePlane.material.map) this.fadePlane.material.map.dispose();
+                this.fadePlane.material.dispose();
+            }
+            if (this.scene) {
+                this.scene.remove(this.fadePlane);
+            }
+            this.fadePlane = null;
+        }
+        
+        // Clear scene
+        if (this.scene) {
+            while (this.scene.children.length > 0) {
+                const child = this.scene.children[0];
+                this.scene.remove(child);
+                
+                // Dispose of child resources
+                if (child.geometry) {
+                    child.geometry.dispose();
+                }
+                if (child.material) {
+                    if (Array.isArray(child.material) && child.material.length > 0) {
+                        child.material.forEach(material => material.dispose());
+                    } else {
+                        child.material.dispose();
+                    }
+                }
+            }
+            this.scene = null;
         }
         
         // Dispose of renderer
         if (this.renderer) {
             this.renderer.dispose();
+            this.renderer.forceContextLoss();
+            this.renderer.domElement = null;
+            this.renderer = null;
         }
+        
+        // Clear camera reference
+        this.camera = null;
+        
+        // Clear config reference
+        this.config = null;
+        
+        console.log('GlobeVisualizer resources disposed successfully.');
     }
 }

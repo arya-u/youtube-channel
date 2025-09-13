@@ -122,6 +122,75 @@ The DOM element where the globe will be rendered. Must be a valid HTML element.
 </html>
 ```
 
+## Destroying the Globe
+
+The `initiateGlobe` function returns an API object that includes a `destroy` method for proper cleanup:
+
+```javascript
+const globeAPI = initiateGlobe(
+    '@YourChannel',
+    images,
+    {},
+    null,
+    document.getElementById('globe-container')
+);
+
+// Later, when you want to clean up the globe:
+globeAPI.destroy();
+```
+
+### What the Destroy Function Does
+
+The `destroy` method performs comprehensive cleanup:
+- Stops all running animations and transitions
+- Disposes of Three.js resources (geometries, materials, textures)
+- Removes event listeners
+- Clears the container DOM element
+- Cleans up any remaining timeouts or intervals
+
+### Error Handling
+
+The destroy function includes robust error handling with try-catch blocks around each cleanup operation. If any individual cleanup step fails, it will:
+- Log a warning to the console
+- Continue with the remaining cleanup steps
+- Always complete successfully
+
+### When to Use Destroy
+
+- **Single Page Applications**: When navigating between routes
+- **Dynamic Content**: When switching between different globe instances
+- **Memory Management**: To prevent memory leaks in long-running applications
+- **Component Unmounting**: In React, Vue, or other framework component cleanup
+
+### Example with Cleanup
+
+```javascript
+let currentGlobe = null;
+
+function showGlobe(channelName, images) {
+    // Clean up existing globe if any
+    if (currentGlobe) {
+        currentGlobe.destroy();
+    }
+    
+    // Create new globe
+    currentGlobe = initiateGlobe(
+        channelName,
+        images,
+        {},
+        null,
+        document.getElementById('globe-container')
+    );
+}
+
+// Clean up when page unloads
+window.addEventListener('beforeunload', () => {
+    if (currentGlobe) {
+        currentGlobe.destroy();
+    }
+});
+```
+
 ## Configuration Options
 
 You can customize the globe by passing configuration overrides:
